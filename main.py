@@ -2,8 +2,8 @@ from core import App
 
 
 def main():
-    App()
-    App.start()
+    app = App()
+    app.start()
 
 
 if __name__ == '__main__':

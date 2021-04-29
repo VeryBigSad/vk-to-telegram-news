@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 class User:
     def __init__(self, telegram_user_id, vk_session_instance=None, channel_id=None):
-        self.user_id = telegram_user_id
+        self.telegram_user_id = telegram_user_id
         self.channel_id = channel_id
         self.vk_session_instance = vk_session_instance
         self.last_time_newsfeed_checked = -1
@@ -30,6 +30,9 @@ class User:
         return self.cached_newsfeed
 
     def __get_newsfeed_via_method(self):
+        """gets feed from VK and converts every convertable post into Post object
+        :returns list of Post objects"""
+
         newsfeed_method = self.vk_session_instance.method("newsfeed.get", {"return_banned": "0",
                                                                            "filters": "post", "fields": "name"})
         news = []
@@ -38,13 +41,14 @@ class User:
             ignore_post = False
             group_or_profile_obj = [j for j in newsfeed_method['groups' if i.get("source_id") < 0 else 'profiles']
                                     if j.get("id") == (abs(i.get("source_id")))][0]
-            if i.get('marked_as_ads') == 1:
-                continue
+            # TODO: check marked_as_ads and ignore those posts that are
 
             new_post = Post(text=i.get("text"),
                             author_name=group_or_profile_obj.get("name", str(group_or_profile_obj.get("first_name")) +
                                                                  " " + str(group_or_profile_obj.get("last_name"))),
-                            like_count=i.get("likes").get("count"), comment_count=i.get("comments").get("count"))
+                            like_count=i.get("likes").get("count"), comment_count=i.get("comments").get("count"),
+                            owner_id=group_or_profile_obj.get("id"), item_id=i.get("post_id"),
+                            author_type='group' if i.get('source_id') < 0 else 'profile')
 
             for attach in i.get("attachments") if i.get("attachments") is not None else []:
                 if attach.get("type") == 'photo':
@@ -52,7 +56,7 @@ class User:
                 elif attach.get("type") == 'link':
                     new_post.attachments.append(attach["link"]["url"])
                 else:
-                    logger.error(f"Unknown attachment type: {attach.get('type')}, ignoring it...")
+                    logger.warning(f"Unknown attachment type: {attach.get('type')}, ignoring it...")
                     ignore_post = True
                     break
 
