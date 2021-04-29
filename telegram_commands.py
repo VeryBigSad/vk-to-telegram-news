@@ -94,9 +94,11 @@ def process_callback(update: Update, _: CallbackContext) -> int:
     reply_markup[0][0] = InlineKeyboardButton(f'❤️ {new_like_count}', callback_data=callback_data)
     # TODO: replace caption with something else
     if query.message.text is None:
-        query.edit_message_caption(caption=query.message.caption, reply_markup=InlineKeyboardMarkup(reply_markup))
+        query.edit_message_caption(caption=query.message.caption_markdown, parse_mode='MarkdownV2',
+                                   reply_markup=InlineKeyboardMarkup(reply_markup))
     else:
-        query.edit_message_text(text=query.message.text, reply_markup=InlineKeyboardMarkup(reply_markup))
+        query.edit_message_text(text=query.message.text_markdown, parse_mode='MarkdownV2',
+                                reply_markup=InlineKeyboardMarkup(reply_markup))
 
     return 0
 
