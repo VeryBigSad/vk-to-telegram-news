@@ -32,7 +32,7 @@ class App:
 
     def start(self):
         dispatcher = self.updater.dispatcher
-
+        self.updater.bot.sendMediaGroup()
         # commands
         # TODO: add use of message_logger() func here, defined in telegram_commands.py
         # dispatcher.add_handler(CommandHandler("start", start))

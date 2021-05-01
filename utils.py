@@ -17,7 +17,8 @@ def remove_escape_chars(msg: str):
         .replace('|', '\\|') \
         .replace('+', '\\+') \
         .replace('!', '\\!') \
-        .replace('=', '\\=')
+        .replace('=', '\\=') \
+        # .replace('|', '\\|')
 
 
 def send_typing_action(func):

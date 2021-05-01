@@ -84,7 +84,7 @@ def process_callback(update: Update, _: CallbackContext) -> int:
     # probably very not safe
     data = ast.literal_eval(query.data)
 
-    new_like_count = __like_the_post(update.effective_user.id, data.get("owner_id"), data.get("item_id"))
+    new_like_count = like_the_post(update.effective_user.id, data.get("owner_id"), data.get("item_id"))
     # might be a bug here, because string > 64 bytes
     callback_data = str({'owner_id': data.get("owner_id"), 'item_id': data.get("item_id"),
                          'like_count': new_like_count})
@@ -94,17 +94,17 @@ def process_callback(update: Update, _: CallbackContext) -> int:
     reply_markup[0][0] = InlineKeyboardButton(f'❤️ {new_like_count}', callback_data=callback_data)
     # TODO: replace caption with something else
     if query.message.text is None:
-        query.edit_message_caption(caption=query.message.caption_markdown, parse_mode='MarkdownV2',
+        query.edit_message_caption(caption=query.message.caption_markdown_v2, parse_mode='MarkdownV2',
                                    reply_markup=InlineKeyboardMarkup(reply_markup))
     else:
-        query.edit_message_text(text=query.message.text_markdown, parse_mode='MarkdownV2',
+        query.edit_message_text(text=query.message.text_markdown_v2, parse_mode='MarkdownV2',
                                 reply_markup=InlineKeyboardMarkup(reply_markup))
 
     return 0
 
 
 # TODO: finish this & __unlike_the_post()
-def __like_the_post(telegram_id, owner_id, item_id) -> int:
+def like_the_post(telegram_id, owner_id, item_id) -> int:
     """likes the post with the telegram_id persons's account
     :returns new amount of likes"""
     user_object = UserController.get_instance().get_user_by_telegram_id(telegram_id)

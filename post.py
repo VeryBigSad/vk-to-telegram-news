@@ -24,6 +24,11 @@ class Post:
         self.owner_id = owner_id
         self.item_id = item_id
 
+    def add_attachment(self, value) -> None:
+        """adds an attachment to the post.
+        :arg value - link to the attachment (photo, whatever)"""
+        self.attachments.append(value)
+
     def get_message_text(self):
         """combines author's name and posts's text into a string that we use as text in the telegram message"""
         return f'{remove_escape_chars(self.text)}\n\n_{remove_escape_chars(self.author_name)}_' \
